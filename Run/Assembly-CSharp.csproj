@@ -54,7 +54,9 @@
      <Compile Include="Assets\_Scripts\Controller2D.cs" />
      <Compile Include="Assets\_Scripts\Entity.cs" />
      <Compile Include="Assets\_Scripts\LivingEntity.cs" />
+     <Compile Include="Assets\_Scripts\PlatformController.cs" />
      <Compile Include="Assets\_Scripts\Player.cs" />
+     <Compile Include="Assets\_Scripts\RaycastController.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>E:/Unity Stuff/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
