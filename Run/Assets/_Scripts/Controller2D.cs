@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class Controller2D : RaycastController {
 
+	[Header("Controller 2D")]
 	public LayerMask collisionMask;
 
 	public float maxClimbAngle = 75f;
@@ -12,21 +13,41 @@ public class Controller2D : RaycastController {
 
 	public CollisionInfo collisions;
 
+	[HideInInspector]
+	public Vector2 playerInput;
+
+	public override void Awake()
+	{
+		base.Awake ();
+	}
+
 	public override void Start()
 	{
 		base.Start ();
+
+		collisions.faceDir = 1;
 	}
 
-	public void Move (Vector3 velocity, bool standingOnPlatform = false)
+	public void Move (Vector3 velocity, bool standingOnPlatform)
+	{
+		Move (velocity, Vector2.zero, standingOnPlatform);
+	}
+
+	public void Move (Vector3 velocity, Vector2 input, bool standingOnPlatform = false)
 	{
 		UpdateRaycastOrigins ();
 		collisions.Reset ();
 		collisions.velocityOld = velocity;
+		playerInput = input;
+
+		if (velocity.x != 0)
+			collisions.faceDir = (int)(Mathf.Sign (velocity.x));
 
 		if (velocity.y < 0)
 			DescendSlope (ref velocity);
-		if (velocity.x != 0)
-			HorizontalCollisions (ref velocity);
+		
+		HorizontalCollisions (ref velocity);
+
 		if (velocity.y != 0)
 			VerticalCollisions (ref velocity);
 
@@ -38,8 +59,12 @@ public class Controller2D : RaycastController {
 
 	void HorizontalCollisions (ref Vector3 velocity)
 	{
-		float dirX = Mathf.Sign (velocity.x);
+		float dirX = collisions.faceDir;
 		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
+
+		if (Mathf.Abs(velocity.x) < skinWidth) {
+			rayLength = 2f * skinWidth;
+		}
 
 		for (int i = 0; i < horizontalRayCount; i++) {
 
@@ -51,6 +76,9 @@ public class Controller2D : RaycastController {
 			RaycastHit2D hit = Physics2D.Raycast (rayOrigin, Vector2.right * dirX, rayLength, collisionMask);
 
 			if (hit) {
+
+				if (hit.collider.tag == "Through")
+					continue;
 
 				if (hit.distance == 0)
 					continue;
@@ -108,6 +136,22 @@ public class Controller2D : RaycastController {
 			//Debug.DrawRay (rayOrigin, Vector2.up * dirY * rayLength, Color.red); 
 
 			if (hit) {
+
+				//ignores collisions with through objects
+				if (hit.collider.tag == "Through") {
+					if (dirY == 1 || hit.distance == 0)
+						continue;
+
+					if (collisions.fallingThroughPlatform)
+						continue;
+
+					if (playerInput.y == -1 || hit.distance == 0) {
+						collisions.fallingThroughPlatform = true;
+						Invoke ("ResetFallingThroughPlatform", .25f);
+						continue;
+					}
+				}
+
 				velocity.y = (hit.distance - skinWidth) * dirY;
 				rayLength = hit.distance;
 
@@ -187,14 +231,20 @@ public class Controller2D : RaycastController {
 		}
 	}
 
-
+	void ResetFallingThroughPlatform ()
+	{
+		collisions.fallingThroughPlatform = false;
+	}
 
 	public struct CollisionInfo {
 		public bool above, below;
 		public bool left, right;
+		public bool fallingThroughPlatform;
 
 		public bool climbingSlope, desendingSlope;
 		public float slopeAngle, slopeAngleOld;
+
+		public int faceDir;
 
 		public Vector2 velocityOld;
 
