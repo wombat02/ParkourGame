@@ -8,6 +8,7 @@ public class Player : LivingEntity {
 	[Header("Player")]
 	[Header("Movement")]
 	public float moveSpeed = 3f;
+	public float sprintSpeedCoefficient = 2;
 	public float moveSmoothingGround = .1f;
 	public float moveSmoothingAir = .5f;
 	public float maxJumpHeight = 2f;
@@ -17,6 +18,9 @@ public class Player : LivingEntity {
 	float maxJumpVelocity = 0;
 	float minJumpVelocity = 0;
 	float currentXSmoothing;
+
+	[HideInInspector]
+	public bool isSprinting;
 
 	Vector3 velocity;
 	[HideInInspector]
@@ -57,10 +61,13 @@ public class Player : LivingEntity {
 	public void HandleMovement (Vector2 directionalInput)
 	{
 		model.right = controller.collisions.faceDir * Vector2.right;
-
 		wallDirX = (controller.collisions.left) ? -1 : 1;
 
-		velocity.x = Mathf.SmoothDamp (velocity.x, directionalInput.x * moveSpeed, ref currentXSmoothing, (controller.collisions.below)?moveSmoothingGround:moveSmoothingAir);
+		float targetVelocityX = directionalInput.x * moveSpeed;
+		if (isSprinting && controller.collisions.below)
+			targetVelocityX *= sprintSpeedCoefficient;
+
+		velocity.x = Mathf.SmoothDamp (velocity.x,  targetVelocityX, ref currentXSmoothing, (controller.collisions.below)?moveSmoothingGround:moveSmoothingAir);
 		velocity.y += gravity * Time.deltaTime;
 
 		controller.Move (velocity * Time.deltaTime, directionalInput);
@@ -71,7 +78,12 @@ public class Player : LivingEntity {
 
 	public void HandleWallSliding(Vector2 directionalInput)
 	{
-		if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below && velocity.y < 0) {
+		if ((controller.collisions.left || controller.collisions.right) && !controller.collisions.below) {
+
+			if (velocity.y > 0) {
+				velocity.y = 0;
+				wallSliding = true;
+			}
 
 			wallSliding = true;
 			if (velocity.y < -wallSlideSpeedMax)
@@ -127,5 +139,15 @@ public class Player : LivingEntity {
 		if (velocity.y > minJumpVelocity)
 			velocity.y = minJumpVelocity;
 	}
-		
+
+	public void OnSprintInputDown()
+	{
+		if (controller.collisions.below)
+			isSprinting = true;
+	}
+
+	public void OnSprintInputUp ()
+	{
+		isSprinting = false;
+	}
 }

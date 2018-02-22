@@ -14,12 +14,22 @@ public class PlayerInput : MonoBehaviour {
 
 	void Update()
 	{
-		if (Input.GetKeyDown (KeyCode.Space))
+		if (Input.GetKeyDown (KeyCode.Space)) {
 			player.OnJumpInputDown (GetDirectionalInput ());
+		}
 
-		if (Input.GetKeyUp (KeyCode.Space))
+		if (Input.GetKeyUp (KeyCode.Space)) {
 			player.OnJumpInputUp ();
-		
+		}
+
+		if (Input.GetKeyDown (KeyCode.LeftShift)) {
+			player.OnSprintInputDown ();
+		}
+
+		if (Input.GetKeyUp (KeyCode.LeftShift)) {
+			player.OnSprintInputUp ();
+		}
+
 		player.HandleMovement (GetDirectionalInput ());
 		player.HandleWallSliding (GetDirectionalInput ());
 	}

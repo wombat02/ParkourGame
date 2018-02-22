@@ -40,13 +40,14 @@ public class Controller2D : RaycastController {
 		collisions.velocityOld = velocity;
 		playerInput = input;
 
-		if (velocity.x != 0)
+		if (velocity.x != 0) {
 			collisions.faceDir = (int)(Mathf.Sign (velocity.x));
+		}
+
+		HorizontalCollisions (ref velocity);
 
 		if (velocity.y < 0)
 			DescendSlope (ref velocity);
-		
-		HorizontalCollisions (ref velocity);
 
 		if (velocity.y != 0)
 			VerticalCollisions (ref velocity);
@@ -62,8 +63,9 @@ public class Controller2D : RaycastController {
 		float dirX = collisions.faceDir;
 		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
 
-		if (Mathf.Abs(velocity.x) < skinWidth) {
-			rayLength = 2f * skinWidth;
+		if (Mathf.Abs (velocity.x) < skinWidth && !collisions.climbingSlope) {
+
+			rayLength = skinWidth * 2f;
 		}
 
 		for (int i = 0; i < horizontalRayCount; i++) {
