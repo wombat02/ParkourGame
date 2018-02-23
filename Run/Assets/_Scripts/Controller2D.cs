@@ -28,12 +28,12 @@ public class Controller2D : RaycastController {
 		collisions.faceDir = 1;
 	}
 
-	public void Move (Vector3 velocity, bool standingOnPlatform)
+	public void Move (Vector2 velocity, bool standingOnPlatform)
 	{
 		Move (velocity, Vector2.zero, standingOnPlatform);
 	}
 
-	public void Move (Vector3 velocity, Vector2 input, bool standingOnPlatform = false)
+	public void Move (Vector2 velocity, Vector2 input, bool standingOnPlatform = false)
 	{
 		UpdateRaycastOrigins ();
 		collisions.Reset ();
@@ -58,13 +58,12 @@ public class Controller2D : RaycastController {
 		transform.Translate (velocity);
 	}
 
-	void HorizontalCollisions (ref Vector3 velocity)
+	void HorizontalCollisions (ref Vector2 velocity)
 	{
 		float dirX = collisions.faceDir;
 		float rayLength = Mathf.Abs (velocity.x) + skinWidth;
 
 		if (Mathf.Abs (velocity.x) < skinWidth && !collisions.climbingSlope) {
-
 			rayLength = skinWidth * 2f;
 		}
 
@@ -123,7 +122,7 @@ public class Controller2D : RaycastController {
 		}
 	}
 
-	void VerticalCollisions (ref Vector3 velocity)
+	void VerticalCollisions (ref Vector2 velocity)
 	{
 		float dirY = Mathf.Sign (velocity.y);
 		float rayLength = Mathf.Abs (velocity.y) + skinWidth;
@@ -187,7 +186,7 @@ public class Controller2D : RaycastController {
 		}
 	}
 
-	void ClimbSlope (ref Vector3 velocity, float slopeAngle)
+	void ClimbSlope (ref Vector2 velocity, float slopeAngle)
 	{
 		float moveDistance = Mathf.Abs (velocity.x);
 		float climbVelocityY =  Mathf.Sin (slopeAngle * Mathf.Deg2Rad) * moveDistance;
@@ -202,7 +201,7 @@ public class Controller2D : RaycastController {
 		}
 	}
 
-	void DescendSlope (ref Vector3 velocity)
+	void DescendSlope (ref Vector2 velocity)
 	{
 		float directionX = Mathf.Sign (velocity.x);
 

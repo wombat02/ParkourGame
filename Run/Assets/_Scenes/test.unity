@@ -887,18 +887,19 @@ MonoBehaviour:
   startingHealth: 100
   moveSpeed: 3
   sprintSpeedCoefficient: 2
-  moveSmoothingGround: 0.08
-  moveSmoothingAir: 1
+  moveSmoothingGround: 0.1
+  moveSmoothingAir: 0.8
   maxJumpHeight: 2
   minJumpHeight: 0.5
   isSprinting: 0
+  jumped: 0
   controller: {fileID: 0}
   wallSlideSpeedGripping: 0.2
   wallSlideSpeedMax: 3
   wallSlideSpeedSmoothing: 0.1
   wallStickTime: 0.1
-  wallJumpClimb: {x: 1, y: 6}
-  wallJumpLeap: {x: 8, y: 6}
+  wallJumpClimb: {x: 0.5, y: 6}
+  wallJumpLeap: {x: 6, y: 6}
   wallJumpOff: {x: 1, y: 0}
 --- !u!4 &1066367281
 Transform:
@@ -1452,6 +1453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abfc23a924dbb434a96db5456e54f5b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hardLandingVelocityThreshold: 15
 --- !u!1 &1965343772
 GameObject:
   m_ObjectHideFlags: 0

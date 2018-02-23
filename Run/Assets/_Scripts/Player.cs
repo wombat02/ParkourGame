@@ -21,8 +21,16 @@ public class Player : LivingEntity {
 
 	[HideInInspector]
 	public bool isSprinting;
+	[HideInInspector]
+	public bool jumped;
 
-	Vector3 velocity;
+	public Vector2 Velocity {
+
+		get { return velocity; }
+		private set { velocity = value; }
+	}
+
+	Vector2 velocity;
 	[HideInInspector]
 	public Controller2D controller;
 
@@ -129,8 +137,12 @@ public class Player : LivingEntity {
 				velocity.x = -wallDirX * wallJumpLeap.x;
 				velocity.y = wallJumpLeap.y;
 			}
+
+			jumped = true;
+
 		} else if (controller.collisions.below) {
 			velocity.y = maxJumpVelocity;
+			jumped = true;
 		}
 	}
 
@@ -138,6 +150,8 @@ public class Player : LivingEntity {
 	{
 		if (velocity.y > minJumpVelocity)
 			velocity.y = minJumpVelocity;
+
+		jumped = false;
 	}
 
 	public void OnSprintInputDown()
